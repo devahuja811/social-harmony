@@ -64,8 +64,6 @@ contract SocialGameToken is
     // onchain reporting of events that happen
     Report private _reporting;
 
-    Report private _winners;
-
     constructor() ERC721("SocialHarmonyToken", "SHMT") {
         _reporting = new Report();
     }
@@ -260,16 +258,6 @@ contract SocialGameToken is
      */
     function getGamesReporting() external view returns (address reporting) {
         reporting = address(_reporting);
-    }
-
-    /**
-     * @dev Return the address for the winner reporting smart contract. use it to find information about
-     * the winners of all games played. First place gets 3 points, 2nd place 2 points, and third place 1 point
-     *
-     * @return winnersReporting address of the winners reporting smart contract
-     */
-    function getWinnersReporting() external view returns (address winnersReporting) {
-        winnersReporting = address(_winners);
     }
 
     /**

@@ -89,6 +89,8 @@ contract SocialGame is Ownable, IERC721Receiver {
     // one address endorse only once
     mapping(address => uint256) private _endorsers;
 
+    string public metadataURI;
+
     /**
      * @dev immutable configuration objects initialised in the contructor,
      * including the benefactor of the escrowed funds
@@ -113,6 +115,10 @@ contract SocialGame is Ownable, IERC721Receiver {
         _socialGameToken = ISocialGameToken(socialGameToken_);
         _reporting = Report(reporting_);
         requiredEndorsers = requiredEndorsers_;
+    }
+
+    function setMetadataURI(string memory uri) public onlyOwner {
+        metadataURI = uri;
     }
 
     /**

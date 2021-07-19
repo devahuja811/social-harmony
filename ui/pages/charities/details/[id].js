@@ -8,6 +8,7 @@ library.add(fab, fas);
 
 import { useRouter } from 'next/router'
 import useStickyState from "../../../lib/useStickyState";
+import OrgDetails from "../../../components/main/orgDetails";
 
 const providerOptions = {
     /* See Provider Options Section */
@@ -21,19 +22,25 @@ export default function Home(props) {
     const [tab, setTab] = useState(0);
     const [leaderTab, setLeaderTab] = useState(0);
     const [charitiesObj, setCharitiesObj] = useStickyState([], "charities");
+    const [gamesObj, setGamesObj] = useStickyState([], "games");
+    const [gameSelected, setSelected] = useStickyState({}, "gameSelected");
     const [charity, setCharity] = useState({});
+    const [games, setGames] = useState([]);
 
     const { id } = router.query;
 
     useEffect(() => {
-        console.log(charitiesObj, id);
         if (charitiesObj.length === 0) {
             return;
         }
-        const c = charitiesObj.filter(e => e.id === id);
+        const c = charitiesObj.filter(e => e.id == id);
         setCharity(c[0]);
-        console.log(c[0]);
+        const g = gamesObj.filter(e=> e.organisation === id);
+        setGames(g);
+        
     }, [id, charitiesObj]);
+
+    console.log(games, charity);
 
     return (
         <div className="container md mx-auto overflow-visible py-20 px-40 w-screen">
@@ -41,14 +48,11 @@ export default function Home(props) {
                 <p className="h-16 flex-grow text-3xl">
                     {charity?.organisation}
                 </p>
-                <p className="h-16 flex-none w-1/4">
-                    By Staff from <a href="mailto" className="link link-secondary">@PAWS Society</a>
-                </p>
             </div>
             <div className="flex">
                 <div className="flex-grow">
                     <div className="w-full carousel rounded-box">
-                        {charity?.heroImages.map(e => {
+                        {charity?.heroImages?.map(e => {
                             return (
                                 <div className="w-full carousel-item">
                                     <img src={e} className="rounded-xl shadow-xl w-full" />
@@ -65,89 +69,41 @@ export default function Home(props) {
                                 <a className={"tab tab-bordered " + (tab === 2 ? "tab-active" : "")} onClick={e => setTab(2)}>Leaderboard</a>
                             </div>
                             <div className={"" + (tab === 0 ? "" : "hidden")}>
-                                <p className="font-thin pb-4">
-                                    PAWS (PAWS Animal Welfare Society) is a non-profit animal shelter in Petaling Jaya
-                                    that has been in operation since 1987. We receive the surrender of unwanted dogs and
-                                    cats which we will vaccinate, deworm, neuter/spay, and put up for adoption. Currently,
-                                    there are over 250 dogs and 250 cats under the care of the shelter.
-                                </p>
-                                <p className="font-thin">
-                                    The shelter and all
-                                    costs involved in running it are entirely funded by the generous donations of the public
-                                    as well as proceeds from charitable events. The PAWS team consists of four office staff,
-                                    a number of part-time veterinarians, one vet assistant, six kennel workers, and one driver.
-                                    PAWS is a registered Society under the Registry of Societies of Malaysia that is led by
-                                    an elected committee.
-                                </p>
+                                {charity?.story?.split("\n").map((e, i) => {
+                                    return i === 0 ? <p className="font-thin pb-4">{e}</p> : <p className="font-thin">{e}</p>
+                                })}
+
                             </div>
                             <div className={"" + (tab === 1 ? "" : "hidden")}>
                                 <div className="grid grid-cols-3 gap-4">
-                                    <div className="card bordered compact bg-gray-600 shadow-2xl">
-                                        <figure>
-                                            <img src="/charities/1.campaign.cat.png" />
-                                        </figure>
-                                        <div className="card-body">
-                                            <p className="text-xs font-thin leading-relaxed">PAWS Malaysia</p>
-                                            <p className="text-lg leading-relaxed">Save the Kitties</p>
-                                            <p className="text-sm font-thin leading-relaxed">100 One/$6.20 per entry</p>
-                                            <p className="text-sm font-thin leading-relaxed mt-2">120 Participants</p>
-                                            <progress className="progress progress-warning" value="120" max="1000"></progress>
-                                            <p className="text-xs text-gray-400 font-thin leading-relaxed">Of 1000 Participants Goal</p>
-                                            <button className="btn btn-secondary btn-sm font-thin flex-1 mt-4" onClick={() => router.push("/browse/details")}>Join the Cause</button>
-                                        </div>
-                                    </div>
-                                    <div className="card bordered compact bg-gray-600 shadow-2xl">
-                                        <figure>
-                                            <img src="/charities/1.campaign.cat.png" />
-                                        </figure>
-                                        <div className="card-body">
-                                            <p className="text-xs font-thin leading-relaxed">PAWS Malaysia</p>
-                                            <p className="text-lg leading-relaxed">Save the Kitties</p>
-                                            <p className="text-sm font-thin leading-relaxed">100 One/$6.20 per entry</p>
-                                            <p className="text-sm font-thin leading-relaxed mt-2">420 Participants</p>
-                                            <progress className="progress progress-info" value="420" max="1000"></progress>
-                                            <p className="text-xs text-gray-400 font-thin leading-relaxed">Of 1000 Participants Goal</p>
-                                            <button className="btn btn-secondary btn-sm font-thin flex-1 mt-4" onClick={() => router.push("/browse/details")}>Join the Cause</button>
-                                        </div>
-                                    </div>
-                                    <div className="card bordered compact bg-gray-600 shadow-2xl">
-                                        <figure>
-                                            <img src="/charities/1.campaign.cat.png" />
-                                        </figure>
-                                        <div className="card-body">
-                                            <p className="text-xs font-thin leading-relaxed">PAWS Malaysia</p>
-                                            <p className="text-lg leading-relaxed">Save the Kitties</p>
-                                            <p className="text-sm font-thin leading-relaxed">100 One/$6.20 per entry</p>
-                                            <p className="text-sm font-thin leading-relaxed mt-2">820 Participants</p>
-                                            <progress className="progress progress-success" value="820" max="1000"></progress>
-                                            <p className="text-xs text-gray-400 font-thin leading-relaxed">Of 1000 Participants Goal</p>
-                                            <button className="btn btn-secondary btn-sm font-thin flex-1 mt-4" onClick={() => router.push("/browse/details")}>Join the Cause</button>
-                                        </div>
-                                    </div>
-                                    <div className="card bordered compact bg-gray-600 shadow-2xl">
-                                        <figure>
-                                            <img src="/charities/1.campaign.cat.png" />
-                                        </figure>
-                                        <div className="card-body">
-                                            <p className="text-xs font-thin leading-relaxed">PAWS Malaysia</p>
-                                            <p className="text-lg leading-relaxed">Save the Kitties</p>
-                                            <p className="text-sm font-thin leading-relaxed">100 One/$6.20 per entry</p>
-                                            <p className="text-sm font-thin leading-relaxed mt-2">120 Participants</p>
-                                            <progress className="progress progress-warning" value="120" max="1000"></progress>
-                                            <p className="text-xs text-gray-400 font-thin leading-relaxed">Of 1000 Participants Goal</p>
-                                            <button className="btn btn-secondary btn-sm font-thin flex-1 mt-4" onClick={() => router.push("/browse/details")}>Join the Cause</button>
-                                        </div>
-                                    </div>
+                                    {
+                                        games?.map(game => {
+                                            return (
+                                                <div className="card bordered compact bg-gray-600 shadow-2xl">
+                                                    <figure>
+                                                        <img src={game?.banner} />
+                                                    </figure>
+                                                    <div className="card-body">
+                                                        <p className="text-xs font-thin leading-relaxed">{game?.organisationName}</p>
+                                                        <p className="text-lg leading-relaxed">{game?.title}</p>
+                                                        <p className="text-sm font-thin leading-relaxed">{game?.costPerEntry} One/$6.20 per entry</p>
+                                                        <p className="text-sm font-thin leading-relaxed mt-2">{game?.entries} Participants</p>
+                                                        <progress className="progress progress-warning" value={+game?.entries} max={+game?.totalParticipants}></progress>
+                                                        <p className="text-xs text-gray-400 font-thin leading-relaxed">Of {game?.totalParticipants} Participants Goal</p>
+                                                        <button className="btn btn-secondary btn-sm font-thin flex-1 mt-4" onClick={() => {
+                                                            router.push("/browse/" + game?.id);
+                                                            setSelected(game);
+                                                        }}>Join the Cause</button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+                                    }
                                 </div>
                             </div>
                             <div className={"" + (tab === 2 ? "" : "hidden")}>
 
-                                <div className="btn-group pt-2 pb-4">
-                                    <button className={"btn btn-md font-thin " + (leaderTab === 0 ? "btn-active" : "")} onClick={e => setLeaderTab(0)}>Most Generous</button>
-                                    <button className={"btn btn-md font-thin " + (leaderTab === 1 ? "btn-active" : "")} onClick={e => setLeaderTab(1)}>Luckiest</button>
-                                    <button className={"btn btn-md font-thin " + (leaderTab === 2 ? "btn-active" : "")} onClick={e => setLeaderTab(2)}>Unluckiest</button>
 
-                                </div>
                                 <table className="table w-full">
                                     <thead>
                                         <tr>
@@ -434,111 +390,7 @@ export default function Home(props) {
                         <button className="btn btn-secondary flex-1 mt-4" onClick={() => router.push("/browse")}>Browse active Campaigns</button>
                     </div>
 
-                    <div className="card bordered compact bg-gray-800 mt-4">
-                        <div className="card-body">
-                            <div className="grid grid-cols-4 gap-2 mb-2">
-                                <div className="avatar">
-                                    <div className="mb-2 w-10 h-10 bordered">
-                                        <Blockies opts={{ seed: "foo", color: "#dfe", bgcolor: "#a71", size: 20, scale: 2, spotcolor: "#000" }} />
-                                    </div>
-                                </div>
-                                <div className="col-span-3 h-full">
-                                    <div>
-                                        <a href="https://explorer.harmony.one/#/block/0xba91dae8f32b01575233bfab246b5192627ae43de42c7931485789c92ca4f653"
-                                            target="_blank_" className="link link-hover link-accent text-xs truncate leading-relaxed">
-                                            0x5412337e51Dd9B7b57ec18bFbcEbc3eFD12884d3
-                                        </a>
-                                        <p className="text-xs truncate">100 ONE <span className="text-gray-500">• 12 minutes ago</span></p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-4 gap-2 mb-2">
-                                <div className="avatar">
-                                    <div className="mb-2 w-10 h-10 bordered">
-                                        <Blockies opts={{ seed: "food", color: "#dfe", bgcolor: "#a71", size: 20, scale: 2, spotcolor: "#000" }} />
-                                    </div>
-                                </div>
-                                <div className="col-span-3 h-full">
-                                    <div>
-                                        <a href="https://explorer.harmony.one/#/block/0xba91dae8f32b01575233bfab246b5192627ae43de42c7931485789c92ca4f653"
-                                            target="_blank_" className="link link-hover link-accent text-xs truncate leading-relaxed">
-                                            0x5412337e51Dd9B7b57ec18bFbcEbc3eFD12884d3
-                                        </a>
-                                        <p className="text-xs truncate">100 ONE <span className="text-gray-500">• 12 minutes ago</span></p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-4 gap-2 mb-2">
-                                <div className="avatar">
-                                    <div className="mb-2 w-10 h-10 bordered">
-                                        <Blockies opts={{ seed: "foo3", color: "#dfe", bgcolor: "#a71", size: 20, scale: 2, spotcolor: "#000" }} />
-                                    </div>
-                                </div>
-                                <div className="col-span-3 h-full">
-                                    <div>
-                                        <a href="https://explorer.harmony.one/#/block/0xba91dae8f32b01575233bfab246b5192627ae43de42c7931485789c92ca4f653"
-                                            target="_blank_" className="link link-hover link-accent text-xs truncate leading-relaxed">
-                                            0x5412337e51Dd9B7b57ec18bFbcEbc3eFD12884d3
-                                        </a>
-                                        <p className="text-xs truncate">100 ONE <span className="text-gray-500">• 12 minutes ago</span></p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-4 gap-2 mb-2">
-                                <div className="avatar">
-                                    <div className="mb-2 w-10 h-10 bordered">
-                                        <Blockies opts={{ seed: "foo,", color: "#dfe", bgcolor: "#a71", size: 20, scale: 2, spotcolor: "#000" }} />
-                                    </div>
-                                </div>
-                                <div className="col-span-3 h-full">
-                                    <div>
-                                        <a href="https://explorer.harmony.one/#/block/0xba91dae8f32b01575233bfab246b5192627ae43de42c7931485789c92ca4f653"
-                                            target="_blank_" className="link link-hover link-accent text-xs truncate leading-relaxed">
-                                            0x5412337e51Dd9B7b57ec18bFbcEbc3eFD12884d3
-                                        </a>
-                                        <p className="text-xs truncate">100 ONE <span className="text-gray-500">• 12 minutes ago</span></p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-4 gap-2 mb-2">
-                                <div className="avatar">
-                                    <div className="mb-2 w-10 h-10 bordered">
-                                        <Blockies opts={{ seed: "fo,o", color: "#dfe", bgcolor: "#a71", size: 20, scale: 2, spotcolor: "#000" }} />
-                                    </div>
-                                </div>
-                                <div className="col-span-3 h-full">
-                                    <div>
-                                        <a href="https://explorer.harmony.one/#/block/0xba91dae8f32b01575233bfab246b5192627ae43de42c7931485789c92ca4f653"
-                                            target="_blank_" className="link link-hover link-accent text-xs overflow-elipsis leading-relaxed">
-                                            0x5412337e51Dd9B7b57ec18bFbcEbc3eFD12884d3
-                                        </a>
-                                        <p className="text-xs truncate">100 ONE <span className="text-gray-500">• 12 minutes ago</span></p>
-                                    </div>
-                                </div>
-                            </div>
-                            <p>+3,003 gamers <span className="text-gray-500">have donated</span></p>
-                        </div>
-                    </div>
-
-                    <div className="card bordered compact bg-gray-800 mt-4">
-                        <figure className="h-32 mb-2">
-                            <img src="/charities/1.png" />
-
-                        </figure>
-
-                        <div className="card-body">
-                            <p className="font-bold">About</p>
-                            <p className="font-thin">PAWS (PAWS Animal Welfare Society) is a non-profit animal shelter in Petaling Jaya that has been in operation since 1987.</p>
-                            <div className="mt-2">
-                                <p><FontAwesomeIcon icon="envelope" /></p>
-                                <p><FontAwesomeIcon icon="globe" /></p>
-                                <p><FontAwesomeIcon icon={["fab", "facebook"]} /></p>
-                                <p><FontAwesomeIcon icon={["fab", "twitter"]} /></p>
-                                <p><FontAwesomeIcon icon="phone-square" /></p>
-                            </div>
-
-                        </div>
-                    </div>
+                    {<OrgDetails charity={charity}/>}
 
                 </div>
             </div>
