@@ -2,7 +2,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function OrgDetails({ charity }) {
 
-    console.log(charity);
 
     return (<div className="card bordered compact bg-gray-800 mt-4">
         <figure className="h-32 mb-2">

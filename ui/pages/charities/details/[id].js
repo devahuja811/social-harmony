@@ -9,6 +9,7 @@ library.add(fab, fas);
 import { useRouter } from 'next/router'
 import useStickyState from "../../../lib/useStickyState";
 import OrgDetails from "../../../components/main/orgDetails";
+import GameDetails from "../../../components/main/gameDetails";
 
 const providerOptions = {
     /* See Provider Options Section */
@@ -23,7 +24,6 @@ export default function Home(props) {
     const [leaderTab, setLeaderTab] = useState(0);
     const [charitiesObj, setCharitiesObj] = useStickyState([], "charities");
     const [gamesObj, setGamesObj] = useStickyState([], "games");
-    const [gameSelected, setSelected] = useStickyState({}, "gameSelected");
     const [charity, setCharity] = useState({});
     const [games, setGames] = useState([]);
 
@@ -39,8 +39,6 @@ export default function Home(props) {
         setGames(g);
         
     }, [id, charitiesObj]);
-
-    console.log(games, charity);
 
     return (
         <div className="container md mx-auto overflow-visible py-20 px-40 w-screen">
@@ -79,23 +77,7 @@ export default function Home(props) {
                                     {
                                         games?.map(game => {
                                             return (
-                                                <div className="card bordered compact bg-gray-600 shadow-2xl">
-                                                    <figure>
-                                                        <img src={game?.banner} />
-                                                    </figure>
-                                                    <div className="card-body">
-                                                        <p className="text-xs font-thin leading-relaxed">{game?.organisationName}</p>
-                                                        <p className="text-lg leading-relaxed">{game?.title}</p>
-                                                        <p className="text-sm font-thin leading-relaxed">{game?.costPerEntry} One/$6.20 per entry</p>
-                                                        <p className="text-sm font-thin leading-relaxed mt-2">{game?.entries} Participants</p>
-                                                        <progress className="progress progress-warning" value={+game?.entries} max={+game?.totalParticipants}></progress>
-                                                        <p className="text-xs text-gray-400 font-thin leading-relaxed">Of {game?.totalParticipants} Participants Goal</p>
-                                                        <button className="btn btn-secondary btn-sm font-thin flex-1 mt-4" onClick={() => {
-                                                            router.push("/browse/" + game?.id);
-                                                            setSelected(game);
-                                                        }}>Join the Cause</button>
-                                                    </div>
-                                                </div>
+                                                <GameDetails game={game}/>
                                             );
                                         })
                                     }

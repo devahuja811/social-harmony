@@ -18,6 +18,7 @@ import Blockies from '../../components/blockies';
 import { Pie, Line, Doughnut } from 'react-chartjs-2';
 import useStickyState from "../../lib/useStickyState";
 import OrgDetails from "../../components/main/orgDetails";
+import GameButton from "../../components/main/gameButton";
 
 library.add(fab, fas);
 
@@ -26,21 +27,36 @@ export default function Home() {
     const [tab, setTab] = useState(0);
 
     const { id } = router.query;
-    const [selected, selectedGamesObj] = useStickyState({}, "gameSelected");
+    const [selected, selectedGamesObj] = useStickyState(null, "game");
+    const [games, setGames] = useStickyState([], "games");
     const [charities, setCharities] = useStickyState([], "charities");
     const [charity, setCharity] = useState({});
 
+    let color = "success";
+    let percent = 0;
+    if (selected?.status === "pending" || selected?.status === "cancelled" && !selected?.endorsed) { // endorsement
+        percent = 100 * (+selected?.currentEndorsers) / (+selected?.totalEndorsers + 1);
+    }
+    else { // 
+        percent = 100 * (+selected?.entries) / (+selected?.totalParticipants + 1);
+    }
+
+    if (percent < 30) color = "warning";
+    else if (percent < 60) color = "info";
+
     useEffect(() => {
-        const c = selected.organisation;
+        const c = selected?.organisation;
 
         if (charities.length === 0) {
             return;
         }
-        console.log(charities);
-        setCharity(charities.filter(e=>e.id === c)[0]);
-    }, [selected, charities]);
-
-    console.log(selected);
+        setCharity(charities.filter(e => e.id === c)[0]);
+        if (!selected || Object.keys(selected).length === 0) {
+            console.log("Games is", games);
+            selectedGamesObj(games.filter(e => e.id === id)[0]);
+        }
+        console.log("Obj currently selected is", selected);
+    }, [id, charities, games, selected]);
 
     return (
         <div className="container md mx-auto overflow-visible py-20 px-40 w-screen">
@@ -79,7 +95,7 @@ export default function Home() {
                                     return <p className="font-thin leading-relaxed pb-4">{e}</p>
                                 })
                             }
-                            <div class="justify-start">
+                            <div className="justify-start">
                                 {selected?.endorsed &&
                                     (<button className="btn btn-secondary flex-1 mt-4" onClick={() => router.push("/browse")}>Join the Cause</button>)
                                 }
@@ -94,33 +110,39 @@ export default function Home() {
                     <div className="card bordered bg-gray-800 compact">
                         <div className="card-body divide-y">
                             <div className="pb-4">
-                                <h2 className="card-title">{selected?.entries} Participants</h2>
-                                <progress className="progress progress-warning" value={selected?.entries} max={selected?.totalParticipants}></progress>
-                                <p className="font-thin">out of {selected?.totalParticipants} Participants</p>
-                                <p className="font-thin">@ {selected?.costPerEntry} ONE per entry <span className="text-gray-400">($6.40)</span></p>
-                                <p className="py-2">Goal {(+(selected?.totalParticipants)) * (+(selected?.costPerEntry))} ONE <span className="text-gray-400">($11,380)</span></p>
+                                {selected?.status !== "pending" && <h2 className="card-title">{selected?.entries} Participants</h2>}
+                                {selected?.status !== "pending" && <progress className={"progress progress-" + color} value={+selected?.entries} max={+selected?.totalParticipants}></progress>}
+                                {selected?.status !== "pending" && <p className="text-xs text-gray-400 font-thin leading-relaxed">Of {selected?.totalParticipants} Participants Goal</p>}
+                                {selected?.status !== "pending" && <p className="font-thin">@ {selected?.costPerEntry} ONE per entry <span className="text-gray-400">($6.40)</span></p>}
+                                {selected?.status !== "pending" && <p className="py-2">Goal {(+(selected?.totalParticipants)) * (+(selected?.costPerEntry))} ONE <span className="text-gray-400">($11,380)</span></p>}
+
+                                {selected?.status === "pending" && <h2 className="card-title">{selected?.currentEndorsers} Endorsers</h2>}
+                                {selected?.status === "pending" && <progress className={"progress progress-" + color} value={+selected?.currentEndorsers} max={+selected?.totalEndorsers}></progress>}
+                                {selected?.status === "pending" && <p className="text-xs text-gray-400 font-thin leading-relaxed">Of {selected?.totalEndorsers} Endorser Goal</p>}
                             </div>
                             <div className="pt-4">
-                                {selected?.endorsed && (<p className="san-serif text-green-500">
+                                {selected?.status !== "pending" && selected?.endorsed && (<p className="san-serif text-green-500">
                                     ✓ ENDORSED
                                 </p>)}
-                                {!selected?.endorsed && (<p className="san-serif text-blue-500">
-                                    ? UNENDORSED
+                                {selected?.status === "pending" && (<p className="san-serif text-blue-500">
+                                    ? PENDING ENDORSEMENT
                                 </p>)}
-                                {!selected?.endorsed && <p className="font-thin text-xs italic">Game must be endorsed before starting</p>}
+                                {selected?.status === "completed" && (<p className="san-serif text-blue-500">
+                                    ✓ GAME COMPLETE
+                                </p>)}
+                                {selected?.status === "cancelled" && (<p className="san-serif text-red-500">
+                                    x GAME CANCELLED
+                                </p>)}
+                                
+                                {!selected?.status === "active" && <p className="font-thin text-xs italic">Game must be endorsed before starting</p>}
 
                             </div>
                         </div>
                     </div>
                     <div className="flex flex-col">
-                        {selected?.endorsed &&
-                            (<button className="btn btn-secondary flex-1 mt-4" onClick={() => router.push("/browse")}>Join the Cause</button>)
-                        }
-                        {!selected?.endorsed &&
-                            (<button className="btn btn-primary flex-1 mt-4" onClick={() => router.push("/browse")}>Endorse Cause</button>)
-                        }
+                        <GameButton game={selected} />
                     </div>
-                    <OrgDetails charity={charity}/>
+                    <OrgDetails charity={charity} />
                 </div>
             </div>
         </div >
