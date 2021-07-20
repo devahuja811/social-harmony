@@ -13,8 +13,8 @@
 /out/
 
 # production
-/build
-
+build
+migrate.output
 # misc
 .DS_Store
 *.pem

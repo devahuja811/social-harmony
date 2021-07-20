@@ -1,0 +1,21 @@
+{
+  "organisation": "PAWS Society of Malaysia",
+  "organisationBanner": "/charities/1.png",
+  "description": "PAWS (PAWS Animal Welfare Society) is a non-profit animal shelter in Petaling Jaya that has been in operation since 1987. We receive the surrender of unwanted dogs and cats which we will vaccinate, deworm, neuter/spay, and put up for adoption. Currently, there are over 250 dogs and 250 cats under the care of the shelter.",
+  "story": "PAWS (PAWS Animal Welfare Society) is a non-profit animal shelter in Petaling Jaya that has been in operation since 1987. We receive the surrender of unwanted dogs and cats which we will vaccinate, deworm, neuter/spay, and put up for adoption. Currently, there are over 250 dogs and 250 cats under the care of the shelter.\n\nThe shelter and all costs involved in running it are entirely funded by the generous donations of the public as well as proceeds from charitable events. The PAWS team consists of four office staff, a number of part-time veterinarians, one vet assistant, six kennel workers, and one driver. PAWS is a registered Society under the Registry of Societies of Malaysia that is led by an elected committee.",
+  "icon": "",
+  "heroImages": [
+    "/charities/1.banner.jpeg",
+    "https://picsum.photos/id/501/256/144",
+    "https://picsum.photos/id/502/256/144",
+    "https://picsum.photos/id/503/256/144"
+  ], 
+  "publicKey": "",
+  "contactDetails": {
+    "email": "",
+    "site": "",
+    "twitter": "",
+    "facebook": "",
+    "phone": ""
+  }
+}

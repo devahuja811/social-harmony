@@ -95,6 +95,7 @@ contract SocialGame is Ownable, IERC721Receiver {
      * @dev immutable configuration objects initialised in the contructor,
      * including the benefactor of the escrowed funds
      */
+
     constructor(
         address payable beneficiary_,
         uint256 participants_,
@@ -104,8 +105,8 @@ contract SocialGame is Ownable, IERC721Receiver {
         address socialGameToken_,
         address reporting_
     ) {
-        require(pricePerRound_ > 0, "invalid price of ticket entry");
-        require(participants_ > 3, "invalid participants");
+        require(pricePerRound_ > 0, "ER_001");
+        require(participants_ > 3, "ER_002");
 
         _daoEscrow = new RefundEscrow(beneficiary_);
         _winnersEscrow = new RefundEscrow(payable(address(this)));
@@ -146,7 +147,7 @@ contract SocialGame is Ownable, IERC721Receiver {
      * Emits {GameCompleted} event
      */
     function gameCompleted() private {
-        require(isGameComplete(), "Game is not complete");
+        require(isGameComplete(), "ER_003");
         _daoEscrow.close();
         _winnersEscrow.close();
         _winnersEscrow.beneficiaryWithdraw(); // withdraw the prize to this smart contract
@@ -222,12 +223,12 @@ contract SocialGame is Ownable, IERC721Receiver {
      * Emits a {Participated} event
      */
     function participate() external payable virtual {
-        require(msg.value == pricePerRound, "Invalid amount received");
-        require(isGameCompleted == false, "Game has ended!");
-        require(_daoEscrow.depositsOf(msg.sender) == 0, "Already Entered");
+        require(msg.value == pricePerRound, "ER_004");
+        require(isGameCompleted == false, "ER_005");
+        require(_daoEscrow.depositsOf(msg.sender) == 0, "ER_006");
         require(
             endorsements == requiredEndorsers,
-            "Required endorsers not met, game not started"
+            "ER_007"
         );
 
         uint256 additional = 0;
@@ -269,10 +270,10 @@ contract SocialGame is Ownable, IERC721Receiver {
      * Emits {Refunded} event
      */
     function refund() external payable virtual {
-        require(isGameCancelled(), "Cannot refund if game is not cancelled");
+        require(isGameCancelled(), "ER_008");
         require(
             _winnersEscrow.depositsOf(msg.sender) > 0,
-            "Cannot refund account, not a participant or refund claimed"
+            "ER_009"
         );
 
         _daoEscrow.withdraw(payable(msg.sender));
@@ -289,11 +290,11 @@ contract SocialGame is Ownable, IERC721Receiver {
     function refundEndorsement() external virtual {
         require(
             isGameCancelled(),
-            "Cannot refund endorsement, game is not cancelled"
+            "ER_010"
         );
         require(
             _endorsers[msg.sender] > 0,
-            "Not an endorser or already claimed refund"
+            "ER_011"
         );
 
         uint256 token = _endorsers[msg.sender];
@@ -304,7 +305,6 @@ contract SocialGame is Ownable, IERC721Receiver {
 
         emit EndorsementRefunded(msg.sender, token);
     }
-
     /**
      * @dev enable winners of the game to withdraw, only if the game is complete
      * and msg sender matches winner
@@ -314,19 +314,19 @@ contract SocialGame is Ownable, IERC721Receiver {
     function claimPrize() external virtual {
         require(
             isGameComplete(),
-            "Cannot withdraw if the game is not completed"
+            "ER_012"
         );
         require(
             msg.sender == winner1st ||
                 msg.sender == winner2nd ||
                 msg.sender == winner3rd,
-            "Cannot claim the prize!"
+            "ER_013"
         );
         require(
             (msg.sender == winner1st && _1stPrizeClaimed == false) ||
                 (msg.sender == winner2nd && _2ndPrizeClaimed == false) ||
                 (msg.sender == winner3rd && _3rdPrizeClaimed == false),
-            "Winners prize already claimed"
+            "ER_014"
         );
 
         address payable payoutAddress = payable(msg.sender);
@@ -360,15 +360,15 @@ contract SocialGame is Ownable, IERC721Receiver {
     function claimEndorsementFee() external virtual {
         require(
             isGameComplete(),
-            "Cannot claim endorsement fee if the game is not completed"
+            "ER_015"
         );
         require(
             requiredEndorsers > 0,
-            "There are no required endorsers for this game"
+            "ER_016"
         );
         require(
             _endorsers[msg.sender] > 0,
-            "Cannot claim endorsement fee because sender is not an endorser"
+            "ER_017"
         );
 
         _endorsers[msg.sender] = 0;
@@ -403,19 +403,19 @@ contract SocialGame is Ownable, IERC721Receiver {
     function beneficiaryWithdraw() external virtual {
         require(
             isGameCancelled() == false,
-            "Cannot withdraw from DAO, game has been cancelled"
+            "ER_018"
         );
         require(
             msg.sender == _daoEscrow.beneficiary(),
-            "Cannot withdraw from DAO, not beneficiary"
+            "ER_019"
         );
         require(
             isGameComplete(),
-            "Cannot withdraw dao fund, game is not completed"
+            "ER_020"
         );
         require(
             address(_daoEscrow).balance > 0,
-            "Cannot withdraw from DAO fund, DAO fund already claimed"
+            "ER_021"
         );
 
         _daoEscrow.beneficiaryWithdraw();
@@ -430,7 +430,7 @@ contract SocialGame is Ownable, IERC721Receiver {
      * Emits {GameCancelled} event
      */
     function gameCancelled() public onlyOwner {
-        require(isGameComplete() == false, "Game is completed, cannot cancel");
+        require(isGameComplete() == false, "ER_022");
 
         _daoEscrow.enableRefunds();
         _winnersEscrow.enableRefunds();
@@ -493,7 +493,7 @@ contract SocialGame is Ownable, IERC721Receiver {
     receive() external payable {
         require(
             msg.sender == address(_winnersEscrow),
-            "cannot receive funds externally (receive)"
+            "ER_023"
         );
     }
 
@@ -501,7 +501,7 @@ contract SocialGame is Ownable, IERC721Receiver {
     fallback() external payable {
         require(
             msg.sender == address(_winnersEscrow),
-            "cannot receive funds externally (fallback)"
+            "ER_024"
         );
     }
 
@@ -522,12 +522,12 @@ contract SocialGame is Ownable, IERC721Receiver {
     ) external override returns (bytes4) {
         require(
             msg.sender == address(_socialGameToken),
-            "Can only receive tokens from the social token contract"
+            "ER_025"
         );
-        require(_endorsers[from] == 0, "Can only endorse once");
+        require(_endorsers[from] == 0, "ER_026");
         require(
             endorsements < requiredEndorsers,
-            "Sufficient endorsements received to begin game"
+            "ER_027"
         );
 
         _endorsers[from] = tokenId;

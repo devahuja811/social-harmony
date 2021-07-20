@@ -129,6 +129,10 @@ contract SocialHarmonyRegistry is Ownable, AccessControl {
         count = organisations.length;
     }
 
+    function getOrgs() public view returns (address[] memory orgs) {
+        orgs = organisations;
+    }
+
     function getURIs(uint256 start, uint256 pageSize)
         public
         view

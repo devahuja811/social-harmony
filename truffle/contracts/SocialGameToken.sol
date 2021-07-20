@@ -46,6 +46,8 @@ contract SocialGameToken is
     // mapping of social game contract address to game id
     mapping(address => uint256) private _socialGameIds;
 
+    address[] private _socialGameAddresses;
+
     // mapping of game id to active status, true for active, false for inactive
     mapping(uint256 => bool) private _gameStatus;
 
@@ -64,8 +66,11 @@ contract SocialGameToken is
     // onchain reporting of events that happen
     Report private _reporting;
 
+    address private _owner;
+
     constructor() ERC721("SocialHarmonyToken", "SHMT") {
         _reporting = new Report();
+        _owner = msg.sender;
     }
 
     /**
@@ -117,10 +122,10 @@ contract SocialGameToken is
     ) public returns (uint256 gameId_) {
         // return new instance of social game, transferring ownership
 
-        if (_gameIds.current() == 0) {
+        if (_gameIds.current() == 0) { // first game is a initial offering and endorsers are set to 0
             require(
-                operator == owner(),
-                "Game start can only be called by owner"
+                operator == _owner,
+                "ER_028"
             );
             totalEndorsers = 0;
         }
@@ -139,8 +144,13 @@ contract SocialGameToken is
         _socialGameIds[address(game)] = gameId_;
         _gameStatus[game.gameId()] = true;
         _reporting.grantAccess(address(game));
+        _socialGameAddresses.push(address(game));        
 
         emit GameCreated(address(game), gameId_);
+    }
+
+    function getGameAddresses() public view returns (address[] memory games) {
+        games = _socialGameAddresses;
     }
 
     /**
@@ -155,10 +165,10 @@ contract SocialGameToken is
         string memory tokenURI_,
         uint256 gameId
     ) external override returns (uint256 ticket_) {
-        require(_socialGameIds[msg.sender] > 0, "Game not valid");
+        require(_socialGameIds[msg.sender] > 0, "ER_029");
         require(
             _socialGameIds[msg.sender] == gameId,
-            "Cannot register player as the game id is not owned"
+            "ER_030"
         );
         _tokenIds.increment();
 
@@ -176,8 +186,8 @@ contract SocialGameToken is
      */
     function gameCompleted() external override {
         uint256 gameId = _socialGameIds[msg.sender];
-        require(gameId > 0, "Not an active game");
-        require(_gameStatus[gameId] == true, "Game is not active");
+        require(gameId > 0, "ER_031");
+        require(_gameStatus[gameId] == true, "ER_032");
 
         SocialGame game = SocialGame(payable(msg.sender));
 
@@ -218,10 +228,10 @@ contract SocialGameToken is
             return; // we are minting the token
         }
 
-        require(_tokenToGameId[tokenId] > 0, "Invalid Token Id");
+        require(_tokenToGameId[tokenId] > 0, "ER_033");
         require(
             _gameStatus[_tokenToGameId[tokenId]] == false,
-            "Cannot transfer tokens when game is still active"
+            "ER_034"
         );
     }
 
@@ -234,7 +244,7 @@ contract SocialGameToken is
         pure
         returns (uint256)
     {
-        require(bs.length >= start + 32, "slicing out of range");
+        require(bs.length >= start + 32, "ER_035");
         uint256 x;
         assembly {
             x := mload(add(bs, add(0x20, start)))

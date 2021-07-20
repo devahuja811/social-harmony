@@ -3,8 +3,28 @@ import React, { useEffect, useState } from "react";
 import Link from 'next/link';
 import ActiveLink from '../components/activeLink';
 import Head from 'next/head';
+import { getGames, getOrganisations, getReporting } from '../lib/web3/token';
+import useStickyState from '../lib/useStickyState';
 
 function MyApp({ Component, pageProps }) {
+
+  // load the information necessary for our website to begin
+
+  const [games, setGames] = useStickyState([], "games");
+  const [charities, setCharities] = useStickyState([], "charities");
+  const [reporting, setReporting] = useStickyState({
+    gamesPlayed: 0,
+    organisations: 0,
+    moneyRaised: 0,
+    ticketsPurchased: 0
+  }, "overallReport");
+
+  useEffect(async e=>{
+    setGames(await getGames());
+    setCharities(await getOrganisations());
+    setReporting(await getReporting());
+  }, []);
+  
   return (<div>
     <Head>
         <title>Social Harmony - Donate for a Greater Good</title>

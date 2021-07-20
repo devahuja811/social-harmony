@@ -3,16 +3,22 @@ const mnemonic = 'music blouse film lemon thumb position decorate grape funny su
 const privateKeyTest = '02a226db5a4c527d5aceeb59b4d3c349d49ffa063796ce4ea6b785f46b6a66d1';
 
 module.exports = {
+  plugins: ["truffle-contract-size"],
   networks: {
     testnet: {
       provider: () => {
+        // use private key
         return new HDWalletProvider({
-          mnemonic,
+          //mnemonic,
           providerOrUrl: 'https://api.s0.b.hmny.io', // https://api.s0.t.hmny.io for mainnet
-          derivationPath: `m/44'/1023'/0'/0/`
+          privateKeys: [privateKeyTest],
+
+          //derivationPath: `m/44'/1023'/0'/0/`
         });
       },
       network_id: 1666700000, // 1666600000 for mainnet
+      gas: 20000000,   // <--- Twice as much
+      gasPrice: 10000000000,
     },
     testnetHar: {
       provider: () => {

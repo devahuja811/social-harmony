@@ -24,6 +24,7 @@
 var SocialGame = artifacts.require("contracts/SocialGame.sol");
 var SocialGameToken = artifacts.require("contracts/SocialGameToken.sol");
 const { Unit } = require('@harmony-js/utils');
+const  {ErrorCodes} = require("./ErrorCodes");
 
 contract('SocialGame', (accounts) => {
     var creatorAddress = accounts[0];
@@ -33,6 +34,7 @@ contract('SocialGame', (accounts) => {
     var unprivilegedAddress = accounts[4];
     let newSocialGameToken;
     let newSocialGame;
+
     before(async () => {
         /* before tests */
         newSocialGameToken = await SocialGameToken.new();
@@ -61,7 +63,7 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Already Entered");
+                    assert.equal(error.reason, "ER_006");
                 });
         });
 
@@ -80,7 +82,7 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Invalid amount received");
+                    assert.equal(error.reason, "ER_004");
                 });
         });
         // check the getter functions
@@ -100,7 +102,7 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Already Entered");
+                    assert.equal(error.reason, "ER_006");
                 });
             assert.equal(await newSocialGame.totalParticipants(), (+participants) + 1, "Should not increase participation on fail");
 
@@ -110,7 +112,7 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Invalid amount received");
+                    assert.equal(error.reason, "ER_004");
                 });
             assert.equal(await newSocialGame.totalParticipants(), (+participants) + 1, "Should not increase participation on fail");
         });
@@ -142,7 +144,7 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Cannot refund if game is not cancelled");
+                    assert.equal(error.reason, "ER_008");
                 });
         });
         it('should revert if a user attempts to claim prize when the game is not completed', async () => {
@@ -151,7 +153,7 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Cannot withdraw if the game is not completed");
+                    assert.equal(error.reason, "ER_012");
                 });
         });
         it('should return false for cancelled and completed', async () => {
@@ -186,14 +188,14 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Cannot withdraw from DAO, not beneficiary");
+                    assert.equal(error.reason, "ER_019");
                 });
             await newSocialGame.beneficiaryWithdraw({ from: firstOwnerAddress })
                 .then(result => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Cannot withdraw dao fund, game is not completed");
+                    assert.equal(error.reason, "ER_020");
                 });
         });
         it('should only allow the owner to cancel the game', async () => {
@@ -290,7 +292,7 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Game has ended!");
+                    assert.equal(error.reason, "ER_005");
                 });
             assert.isTrue(await newSocialGame.didIWin.call({ from: winner1 }), "Should be a winner");
         });
@@ -313,7 +315,7 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Cannot withdraw from DAO fund, DAO fund already claimed");
+                    assert.equal(error.reason, "ER_021");
                 });
         });
 
@@ -325,7 +327,7 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Cannot withdraw from DAO, not beneficiary");
+                    assert.equal(error.reason, "ER_019");
                 });
         });
 
@@ -373,7 +375,7 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Cannot claim the prize!");
+                    assert.equal(error.reason, "ER_013");
                 });
         });
 
@@ -387,7 +389,7 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Winners prize already claimed");
+                    assert.equal(error.reason, "ER_014");
                 });
         });
     });
@@ -425,7 +427,7 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Game is completed, cannot cancel");
+                    assert.equal(error.reason, "ER_022");
                 });
 
         });
@@ -463,7 +465,7 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Cannot withdraw from DAO, game has been cancelled");
+                    assert.equal(error.reason, "ER_018");
                 });
 
         });
@@ -489,7 +491,7 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Cannot refund account, not a participant or refund claimed");
+                    assert.equal(error.reason, "ER_009");
                 }); //Cannot refund account, not a participant
 
         });
@@ -503,7 +505,7 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Cannot refund account, not a participant or refund claimed");
+                    assert.equal(error.reason, "ER_009");
                 }); //Cannot refund account, not a participant
         });
         it('should have enough eth to refund all when game is cancelled', async () => {
@@ -569,7 +571,7 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Required endorsers not met, game not started");
+                    assert.equal(error.reason, "ER_007");
                 });
         });
 
@@ -585,7 +587,7 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Required endorsers not met, game not started");
+                    assert.equal(error.reason, "ER_007");
                 });
 
             await newSocialGameToken.methods["safeTransferFrom(address,address,uint256)"](
@@ -632,7 +634,7 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Required endorsers not met, game not started");
+                    assert.equal(error.reason, "ER_007");
                 });
 
             await newSocialGameToken.methods["safeTransferFrom(address,address,uint256)"](
@@ -650,7 +652,7 @@ contract('SocialGame', (accounts) => {
             ).then(result => {
                 assert.fail()
             }).catch(error => {
-                assert.equal(error.reason, "Can only endorse once")
+                assert.equal(error.reason, "ER_026")
             });
         });
 
@@ -666,7 +668,7 @@ contract('SocialGame', (accounts) => {
             ).then(result => {
                 assert.fail();
             }).catch(error => {
-                assert.equal(error.reason, "Can only receive tokens from the social token contract");
+                assert.equal(error.reason, "ER_025");
             });
 
             console.log(result);
@@ -678,7 +680,7 @@ contract('SocialGame', (accounts) => {
             await generatedGame.claimEndorsementFee()
                 .then(result => assert.fail())
                 .catch(error => {
-                    assert.equal(error.reason, "Cannot claim endorsement fee if the game is not completed", "unexpected error on endorsement claim");
+                    assert.equal(error.reason, "ER_015", "unexpected error on endorsement claim");
                 });
 
             // complete the game and check again
@@ -687,7 +689,7 @@ contract('SocialGame', (accounts) => {
             await generatedGame.claimEndorsementFee()
                 .then(result => assert.fail())
                 .catch(error => {
-                    assert.equal(error.reason, "There are no required endorsers for this game", "unexpected error on endorsement claim");
+                    assert.equal(error.reason, "ER_016", "unexpected error on endorsement claim");
                 });
 
 
@@ -697,7 +699,7 @@ contract('SocialGame', (accounts) => {
             await generatedGame.claimEndorsementFee()
                 .then(result => assert.fail())
                 .catch(error => {
-                    assert.equal(error.reason, "Cannot claim endorsement fee if the game is not completed", "unexpected error on endorsement claim");
+                    assert.equal(error.reason, "ER_015", "unexpected error on endorsement claim");
                 });
 
             // endorse the game
@@ -719,7 +721,7 @@ contract('SocialGame', (accounts) => {
             await generatedGame.claimEndorsementFee({ from: firstOwnerAddress })
                 .then(result => assert.fail())
                 .catch(error => {
-                    assert.equal(error.reason, "Cannot claim endorsement fee if the game is not completed", "unexpected error on endorsement claim");
+                    assert.equal(error.reason, "ER_015", "unexpected error on endorsement claim");
                 });
 
             // game is completed, should be able to claim
@@ -766,7 +768,7 @@ contract('SocialGame', (accounts) => {
             await generatedGame.refundEndorsement({ from: firstOwnerAddress })
                 .then(result => assert.fail())
                 .catch(error => {
-                    assert.equal(error.reason, "Cannot refund endorsement, game is not cancelled", "unexpected error on refund endorsement");
+                    assert.equal(error.reason, "ER_010", "unexpected error on refund endorsement");
                 });
         });
 
@@ -798,7 +800,7 @@ contract('SocialGame', (accounts) => {
             await generatedGame.refundEndorsement({ from: accounts[5] })
                 .then(result => assert.fail())
                 .catch(error => {
-                    assert.equal(error.reason, "Not an endorser or already claimed refund", "unexpected error on refund endorsement");
+                    assert.equal(error.reason, "ER_011", "unexpected error on refund endorsement");
                 });
         });
 
@@ -830,13 +832,13 @@ contract('SocialGame', (accounts) => {
             await generatedGame.refundEndorsement({ from: accounts[5] })
                 .then(result => assert.fail())
                 .catch(error => {
-                    assert.equal(error.reason, "Cannot refund endorsement, game is not cancelled", "unexpected error on refund endorsement");
+                    assert.equal(error.reason, "ER_010", "unexpected error on refund endorsement");
                 });
 
             // make sure that once the endorsement is claimed
             const result = await generatedGame.claimEndorsementFee({ from: accounts[5] })
                 .catch(error => {
-                    assert.equal(error.reason, "Cannot claim endorsement fee because sender is not an endorser", "unexpected error on endorsement claim");
+                    assert.equal(error.reason, "ER_017", "unexpected error on endorsement claim");
                 });
 
         });
@@ -878,7 +880,7 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 })
                 .catch(error => {
-                    assert.equal(error.reason, "Cannot claim endorsement fee because sender is not an endorser", "unexpected error on refund endorsement");
+                    assert.equal(error.reason, "ER_017", "unexpected error on refund endorsement");
                 });
         });
 
@@ -916,7 +918,7 @@ contract('SocialGame', (accounts) => {
             await generatedGame.refundEndorsement({ from: secondOwnerAddress })
                 .then(result => assert.fail())
                 .catch(error => {
-                    assert.equal(error.reason, "Not an endorser or already claimed refund", "unexpected error on endorsement claim");
+                    assert.equal(error.reason, "ER_011", "unexpected error on endorsement claim");
                 });
         });
 
