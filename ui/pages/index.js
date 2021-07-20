@@ -1,10 +1,5 @@
-import Head from 'next/head'
-import Web3 from "web3";
-import Web3Modal from "web3modal";
-import React, { useEffect, useState } from "react";
-import { themeChange } from "theme-change"
+import react from "react";
 import Hero from '../components/main/hero';
-import Link from 'next/link';
 
 
 const providerOptions = {
@@ -13,7 +8,6 @@ const providerOptions = {
 
 
 export default function Home() {
-  const [web3Modal, setModal] = useState(null);
 
   // useEffect(e => {
   //   setModal(new Web3Modal({

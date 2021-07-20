@@ -19,6 +19,7 @@ import { Pie, Line, Doughnut } from 'react-chartjs-2';
 import useStickyState from "../../lib/useStickyState";
 import OrgDetails from "../../components/main/orgDetails";
 import GameButton from "../../components/main/gameButton";
+import UserContext from "../../lib/web3/userContext";
 
 library.add(fab, fas);
 
@@ -31,6 +32,8 @@ export default function Home() {
     const [games, setGames] = useStickyState([], "games");
     const [charities, setCharities] = useStickyState([], "charities");
     const [charity, setCharity] = useState({});
+
+    const [user,] = useState(UserContext.user);
 
     let color = "success";
     let percent = 0;
@@ -58,6 +61,22 @@ export default function Home() {
         console.log("Obj currently selected is", selected);
     }, [id, charities, games, selected]);
 
+    const handleClick = async (game) => {
+       
+        if (!UserContext.user.isAuthorized) {
+            // connect
+            await UserContext.user.signin();
+            UserContext.setUser(UserContext.user);
+        }
+        // game completed/cancelled? ignore
+        
+        // game active -> connect and pay
+
+        // already joined, change button to joined
+
+        // 
+    }
+
     return (
         <div className="container md mx-auto overflow-visible py-20 px-40 w-screen">
             <div className="flex">
@@ -77,7 +96,7 @@ export default function Home() {
                         {
                             selected?.heroImages?.map(img => {
                                 return (
-                                    <div className="w-full carousel-item">
+                                    <div key={img} className="w-full carousel-item">
                                         <img src={img} className="w-full" />
                                     </div>
                                 )
@@ -91,8 +110,8 @@ export default function Home() {
                                 About the Campaign
                             </div>
                             {
-                                selected?.about?.split("\n").map(e => {
-                                    return <p className="font-thin leading-relaxed pb-4">{e}</p>
+                                selected?.about?.split("\n").map((e, i) => {
+                                    return <p key={i} className="font-thin leading-relaxed pb-4">{e}</p>
                                 })
                             }
                             <div className="justify-start">
@@ -140,7 +159,7 @@ export default function Home() {
                         </div>
                     </div>
                     <div className="flex flex-col">
-                        <GameButton game={selected} />
+                        <GameButton game={selected} externalClickHandler={handleClick} />
                     </div>
                     <OrgDetails charity={charity} />
                 </div>

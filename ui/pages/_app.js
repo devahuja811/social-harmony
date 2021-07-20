@@ -5,6 +5,9 @@ import ActiveLink from '../components/activeLink';
 import Head from 'next/head';
 import { getGames, getOrganisations, getReporting } from '../lib/web3/token';
 import useStickyState from '../lib/useStickyState';
+import ConnectWallet from '../components/main/connectWallet';
+import UserContext from '../lib/web3/userContext';
+import userStore from '../lib/web3/userStore';
 
 function MyApp({ Component, pageProps }) {
 
@@ -12,6 +15,7 @@ function MyApp({ Component, pageProps }) {
 
   const [games, setGames] = useStickyState([], "games");
   const [charities, setCharities] = useStickyState([], "charities");
+  const [user, setUser] = useState({});
   const [reporting, setReporting] = useStickyState({
     gamesPlayed: 0,
     organisations: 0,
@@ -20,11 +24,17 @@ function MyApp({ Component, pageProps }) {
   }, "overallReport");
 
   useEffect(async e=>{
+    console.log("Setting new User");
+    UserContext.setUser = setUser; //(new userStore());
+    UserContext.user = new userStore();
+    setUser(UserContext.user);
     setGames(await getGames());
     setCharities(await getOrganisations());
     setReporting(await getReporting());
   }, []);
-  
+
+  console.log("Re-rendering - _app.js");
+
   return (<div>
     <Head>
         <title>Social Harmony - Donate for a Greater Good</title>
@@ -54,16 +64,11 @@ function MyApp({ Component, pageProps }) {
         </div>
       </div>
       <div className="flex-none">
-        <Link href="/charities">
-            <a className="btn btn-info btn-sm rounded-btn">
-              Connect
-            </a>
-        </Link>
+        <ConnectWallet bal={user.balance} addr={user.address}/>
       </div>
       
     </div>
-
-    <Component {...pageProps} />
+      <Component {...pageProps} />
   </div>);
 }
 

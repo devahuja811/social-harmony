@@ -74,6 +74,13 @@ const getReporting = async () => {
     };
 }
 
+const particpatingInGame = async (address, gameAddress) => {
+    const contractInstance = getGameContract(gameAddress);
+    const results = await contractInstance.methods.getDeposits().call({from: address});
+
+    return results;
+}
+
 export {
     getGames,
     getOrganisations,
