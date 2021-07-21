@@ -1,7 +1,8 @@
 import { useRouter } from 'next/router'
 import useStickyState from '../../lib/useStickyState';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-function GameButton({ game, externalClickHandler, entered }) {
+function GameButton({ game, externalClickHandler, entered, updating }) {
 
     const router = useRouter();
     const [gameObj, setSelected] = useStickyState(game, "game");
@@ -26,10 +27,13 @@ function GameButton({ game, externalClickHandler, entered }) {
     // 
     return (<div>
         {game?.status !== "cancelled" && game?.status !== "completed" && game?.endorsed &&
-            (<button className="btn btn-secondary flex-1 mt-4" onClick={handleClick}>Join the Cause</button>)
+            (<button className="btn btn-secondary flex-1 mt-4" onClick={handleClick}>
+                {updating && <FontAwesomeIcon icon="spinner" pulse />} Join the Cause
+            </button>)
         }
         {game?.status !== "cancelled" && game?.status !== "completed" && !game?.endorsed &&
-            (<button className="btn btn-primary flex-1 mt-4" onClick={handleClick}>Endorse Game</button>)
+            (<button className="btn btn-primary flex-1 mt-4" onClick={handleClick}>
+               {updating && <FontAwesomeIcon icon="spinner" pulse />} Endorse Game</button>)
         }
         {game?.status === "completed" &&
             (<button className="" onClick={handleClick}><img src="/assets/completed.png" /></button>)

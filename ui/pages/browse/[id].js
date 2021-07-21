@@ -36,8 +36,9 @@ export default function Home() {
     const [charity, setCharity] = useState({});
     const [entered, setEntered] = useState(false);
     const [user, setUser] = useStickyState({}, "user");
+    const [buttonUpdating, setUpdating] = useState(false);
 
-    let color = "success";
+    let color = "warning";
     let percent = 0;
     if (selected?.status === "pending" || selected?.status === "cancelled" && !selected?.endorsed) { // endorsement
         percent = 100 * (+selected?.currentEndorsers) / (+selected?.totalEndorsers + 1);
@@ -46,8 +47,8 @@ export default function Home() {
         percent = 100 * (+selected?.entries) / (+selected?.totalParticipants + 1);
     }
 
-    if (percent < 30) color = "warning";
-    else if (percent < 60) color = "info";
+    // if (percent < 30) color = "warning";
+    // else if (percent < 60) color = "info";
 
     useEffect(() => {
         if (!id || !games || games.length === 0) return;
@@ -87,6 +88,7 @@ export default function Home() {
         }
 
         const result = await playGame(game.id);
+        setUpdating(true);
         console.log(result);
         if (result.status === "rejected") {
             // tell user they already entered the game ...
@@ -109,6 +111,7 @@ export default function Home() {
                 'success'
               );
         }
+        setUpdating(false);
         setEntered(true);
     }
 
@@ -192,7 +195,7 @@ export default function Home() {
                         </div>
                     </div>
                     <div className="flex flex-col">
-                        <GameButton game={selected} entered={entered} externalClickHandler={handleClick} />
+                        <GameButton game={selected} updating={buttonUpdating} entered={entered} externalClickHandler={handleClick} />
                     </div>
                     <OrgDetails charity={charity} />
                 </div>

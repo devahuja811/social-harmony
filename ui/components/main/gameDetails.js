@@ -5,7 +5,7 @@ function GameDetails({ game }) {
 
     const router = useRouter();
 
-    let color = "success";
+    let color = "warning";
     let percent = 0;
     if (game?.status === "pending" || game?.status === "cancelled" && !game?.endorsed) { // endorsement
         percent = 100 * (+game?.currentEndorsers) / (+game?.totalEndorsers + 1);
@@ -14,9 +14,9 @@ function GameDetails({ game }) {
         percent = 100 * (+game?.entries) / (+game?.totalParticipants + 1);
     }
     
-    if (percent < 30) color = "warning";
-    else if (percent < 60) color = "info";
-    
+    // if (percent < 30) color = "warning";
+    // else if (percent < 60) color = "success";
+
     // pending endorsement, active, completed or cancelled
     // 
     return (<div className="card bordered compact bg-gray-600 shadow-2xl">
