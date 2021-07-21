@@ -74,7 +74,7 @@ contract('SocialGameToken', (accounts) => {
             }
         })
         it('should have sent 0.65 ONE to dao and 0.35 ONE to winners escrow', async () => {
-            const result = await newSocialGame.getDeposits.call({ from: externalAddress });
+            const result = await newSocialGame.getDeposits.call(externalAddress, { from: externalAddress });
             const dao = new Unit(result.daoEscrow.toString()).toOne();
             const winners = new Unit(result.winnersEscrow.toString()).toOne();
             assert.equal(dao, 0.65, "Failed, 65% of cost should go to DAO");
@@ -133,13 +133,13 @@ contract('SocialGameToken', (accounts) => {
             }
         })
         it('should have sent 0.65 ONE to dao and 0.35 ONE to winners escrow', async () => {
-            const result = await game1.getDeposits.call({ from: externalAddress });
+            const result = await game1.getDeposits.call(externalAddress, { from: externalAddress });
             const dao = new Unit(result.daoEscrow.toString()).toOne();
             const winners = new Unit(result.winnersEscrow.toString()).toOne();
             assert.equal(dao, 0.65, "Failed, 65% of cost should go to DAO");
             assert.equal(winners, 0.35, "Failed, 35% of cost should go to Winners Pool");
 
-            const result2 = await game2.getDeposits.call({ from: externalAddress });
+            const result2 = await game2.getDeposits.call(externalAddress, { from: externalAddress });
             const dao2 = new Unit(result2.daoEscrow.toString()).toOne();
             const winners2 = new Unit(result2.winnersEscrow.toString()).toOne();
             assert.equal(dao2, 0.65, "Failed, 65% of cost should go to DAO");

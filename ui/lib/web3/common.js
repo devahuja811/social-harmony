@@ -18,7 +18,6 @@ const getTokenContract = () => {
 const getReportContract = async () => {
 
     const reportAddress = await getTokenContract().methods.getGamesReporting().call()
-    console.log(reportAddress);
     return hmy.contracts.createContract(Report.abi, reportAddress);
 }
 

@@ -24,16 +24,16 @@ function MyApp({ Component, pageProps }) {
   }, "overallReport");
 
   useEffect(async e=>{
-    console.log("Setting new User");
+    console.log("Full-scale refresh triggered");
     UserContext.setUser = setUser; //(new userStore());
     UserContext.user = new userStore();
-    setUser(UserContext.user);
+    // setUser(UserContext.user);
     setGames(await getGames());
     setCharities(await getOrganisations());
     setReporting(await getReporting());
   }, []);
 
-  console.log("Re-rendering - _app.js");
+  console.log("User details is", user);
 
   return (<div>
     <Head>

@@ -46,7 +46,7 @@ async function createSocialGame(uri) {
         const res = await tok.methods.createSocialGame(
             myAddress, // owner
             myAddress, // beneficiary
-            10, // players
+            5, // players
             web3.utils.toWei('1', 'ether'), // 1 ethereum
             0 // no endorsers
         ).send({ from: myAddress, gas: 10000000 });

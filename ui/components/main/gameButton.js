@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import useStickyState from '../../lib/useStickyState';
 
-function GameButton({ game, externalClickHandler }) {
+function GameButton({ game, externalClickHandler, entered }) {
 
     const router = useRouter();
     const [gameObj, setSelected] = useStickyState(game, "game");
@@ -15,6 +15,13 @@ function GameButton({ game, externalClickHandler }) {
             router.push("/browse/" + game?.id);
         }
     };
+    if (entered && (game?.status !== "completed" || game?.status !== "cancelled")) {
+        return (
+        <div>
+            <button className="btn btn-info flex-1 mt-4">Already Joined</button>
+        </div>
+        );
+    }
     // pending endorsement, active, completed or cancelled
     // 
     return (<div>

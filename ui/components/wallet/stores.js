@@ -8,7 +8,6 @@ import { Hmy } from '@harmony-utils/wrappers'
 
 class Store {
   constructor() {
-    console.log(config);
     const hmy = new Hmy(config.network)
     const onewallet = new OneWalletConnector({ chainId: hmy.client.chainId })
     const mathwallet = new MathWalletConnector({ chainId: hmy.client.chainId })

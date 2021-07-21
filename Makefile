@@ -5,4 +5,4 @@ all:
 	cp truffle/migrate.output helper/	
 	cd helper && node index.js
 	cd seeder && node index.js
-
+	cd ui && npm run dev

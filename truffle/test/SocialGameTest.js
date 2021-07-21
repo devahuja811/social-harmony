@@ -125,14 +125,14 @@ contract('SocialGame', (accounts) => {
                     assert.fail();
                 });
 
-            const deposits = await newSocialGame.getDeposits.call({ from: externalAddress });
+            const deposits = await newSocialGame.getDeposits.call(externalAddress, { from: externalAddress });
             const dao = new Unit(deposits.daoEscrow.toString()).toOne();
             const winner = new Unit(deposits.winnersEscrow.toString()).toOne();
             assert.equal(dao, 0.65, "DAO should take 0.65 ONE tokens based on a 1 ONE deposit requirement");
             assert.equal(winner, 0.35, "Winners should take 0.35 ONE tokens based on a 1 ONE deposit requirement");
         });
         it('should return 0 for those not registered', async () => {
-            const deposits = await newSocialGame.getDeposits.call({ from: secondOwnerAddress });
+            const deposits = await newSocialGame.getDeposits.call(secondOwnerAddress, { from: secondOwnerAddress });
             const dao = new Unit(deposits.daoEscrow.toString()).toOne();
             const winner = new Unit(deposits.winnersEscrow.toString()).toOne();
             assert.equal(dao, 0, "Not part of the game, should return 0 for dao escrow");
@@ -174,7 +174,7 @@ contract('SocialGame', (accounts) => {
                 });
         });
         it('should return false for winner check', async () => {
-            await newSocialGame.didIWin({ from: externalAddress })
+            await newSocialGame.didIWin(externalAddress, { from: externalAddress })
                 .then(result => {
                     assert.isFalse(result, "The game has not yet concluded now, so no winner");
                 })
@@ -294,7 +294,7 @@ contract('SocialGame', (accounts) => {
                 .catch(error => {
                     assert.equal(error.reason, "ER_005");
                 });
-            assert.isTrue(await newSocialGame.didIWin.call({ from: winner1 }), "Should be a winner");
+            assert.isTrue(await newSocialGame.didIWin.call(winner1, { from: winner1 }), "Should be a winner");
         });
 
         it('should allow beneficiary to withdraw the DAO fund', async () => {

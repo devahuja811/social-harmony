@@ -145,7 +145,6 @@ export default function Home() {
     const [cards, setCards] = useState(null);
     const [charitiesObj, setCharitiesObj] = useStickyState([], "charities");
     
-    console.log(charitiesObj);
     // useEffect(() => {
     //     setLatest(2); // read from the registry contract
     //     // save the charity details into the localStorage
@@ -161,7 +160,7 @@ export default function Home() {
     useEffect(() => {
         setCards(charitiesObj.map(charity => {
             return (
-                <div className="card transition duration-500 ease-in-out hover:-translate-y-1 hover:scale-10 bg-neutral shadow-md">
+                <div key={charity.id} className="card transition duration-500 ease-in-out hover:-translate-y-1 hover:scale-10 bg-neutral shadow-md">
                     <figure className="bg-neutral">
                         <img src={charity.organisationBanner} className="h-32" />
                     </figure>

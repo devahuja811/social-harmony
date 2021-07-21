@@ -10,16 +10,18 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/router';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons'
-import Blockies from '../../components/blockies';
-import { Pie, Line, Doughnut } from 'react-chartjs-2';
 import useStickyState from "../../lib/useStickyState";
 import OrgDetails from "../../components/main/orgDetails";
 import GameButton from "../../components/main/gameButton";
 import UserContext from "../../lib/web3/userContext";
+import { getGame, particpatingInGame, playGame } from "../../lib/web3/token";
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+
+const MySwal = withReactContent(Swal)
 
 library.add(fab, fas);
 
@@ -32,8 +34,8 @@ export default function Home() {
     const [games, setGames] = useStickyState([], "games");
     const [charities, setCharities] = useStickyState([], "charities");
     const [charity, setCharity] = useState({});
-
-    const [user,] = useState(UserContext.user);
+    const [entered, setEntered] = useState(false);
+    const [user, setUser] = useStickyState({}, "user");
 
     let color = "success";
     let percent = 0;
@@ -48,34 +50,70 @@ export default function Home() {
     else if (percent < 60) color = "info";
 
     useEffect(() => {
-        const c = selected?.organisation;
+        if (!id || !games || games.length === 0) return;
+        if (selected) return;
 
-        if (charities.length === 0) {
-            return;
-        }
+        const sel = games.filter(e => e.id === id)[0];
+        selectedGamesObj(sel);
+
+        const c = sel.organisation;
         setCharity(charities.filter(e => e.id === c)[0]);
-        if (!selected || Object.keys(selected).length === 0) {
-            console.log("Games is", games);
-            selectedGamesObj(games.filter(e => e.id === id)[0]);
+
+    }, [selected, games, id]);
+
+    useEffect(() => {
+        if (UserContext.user.isAuthorized && selected) {
+            particpatingInGame(selected.id).then(result => {
+                if (result.daoEscrow !== "0") {
+                    // already entered the game
+                    setEntered(true);
+                }
+            });
         }
-        console.log("Obj currently selected is", selected);
-    }, [id, charities, games, selected]);
+        if (!UserContext.user.isAuthorized) {
+            setEntered(false);
+        }
+    }, [UserContext.user.isAuthorized, selected]);
 
     const handleClick = async (game) => {
-       
+        // game completed/cancelled? ignore
+        if (game.status !== "active") {
+            return; // should change the button as well
+        }
+
         if (!UserContext.user.isAuthorized) {
-            // connect
             await UserContext.user.signin();
             UserContext.setUser(UserContext.user);
         }
-        // game completed/cancelled? ignore
-        
-        // game active -> connect and pay
 
-        // already joined, change button to joined
+        const result = await playGame(game.id);
+        console.log(result);
+        if (result.status === "rejected") {
+            // tell user they already entered the game ...
+            Swal.fire(
+                'Already Joined!',
+                'You have already joined the game! Only one address per entry.',
+                'error'
+              );
+        }
+        else {
+            // indicate they have already entered this game!
 
-        // 
+            // refresh selected game
+            const gameObj = await getGame(game.id);
+            selectedGamesObj(gameObj);
+
+            Swal.fire(
+                'Success',
+                'You have successfully joined the social game!',
+                'success'
+              );
+        }
+        setEntered(true);
     }
+
+    const entries = (+(selected?.totalParticipants)) * (+(selected?.costPerEntry));
+    const total = entries * 6.40; // note - use price from exchange, currently hardcoded
 
     return (
         <div className="container md mx-auto overflow-visible py-20 px-40 w-screen">
@@ -115,12 +153,7 @@ export default function Home() {
                                 })
                             }
                             <div className="justify-start">
-                                {selected?.endorsed &&
-                                    (<button className="btn btn-secondary flex-1 mt-4" onClick={() => router.push("/browse")}>Join the Cause</button>)
-                                }
-                                {!selected?.endorsed &&
-                                    (<button className="btn btn-primary flex-1 mt-4" onClick={() => router.push("/browse")}>Endorse Cause</button>)
-                                }
+                                <GameButton game={selected} entered={entered} externalClickHandler={handleClick} />
                             </div>
                         </div>
                     </div>
@@ -129,15 +162,15 @@ export default function Home() {
                     <div className="card bordered bg-gray-800 compact">
                         <div className="card-body divide-y">
                             <div className="pb-4">
-                                {selected?.status !== "pending" && <h2 className="card-title">{selected?.entries} Participants</h2>}
-                                {selected?.status !== "pending" && <progress className={"progress progress-" + color} value={+selected?.entries} max={+selected?.totalParticipants}></progress>}
-                                {selected?.status !== "pending" && <p className="text-xs text-gray-400 font-thin leading-relaxed">Of {selected?.totalParticipants} Participants Goal</p>}
-                                {selected?.status !== "pending" && <p className="font-thin">@ {selected?.costPerEntry} ONE per entry <span className="text-gray-400">($6.40)</span></p>}
-                                {selected?.status !== "pending" && <p className="py-2">Goal {(+(selected?.totalParticipants)) * (+(selected?.costPerEntry))} ONE <span className="text-gray-400">($11,380)</span></p>}
+                                {selected && selected?.status !== "pending" && <h2 className="card-title">{selected?.entries} Participants</h2>}
+                                {selected && selected?.status !== "pending" && <progress className={"progress progress-" + color} value={+selected?.entries} max={+selected?.totalParticipants}></progress>}
+                                {selected && selected?.status !== "pending" && <p className="text-xs text-gray-400 font-thin leading-relaxed">Of {selected?.totalParticipants} Participants Goal</p>}
+                                {selected && selected?.status !== "pending" && <p className="font-thin">@ {selected?.costPerEntry} ONE per entry <span className="text-gray-400">($6.40)</span></p>}
+                                {selected && selected?.status !== "pending" && <p className="py-2">Goal {entries} ONE <span className="text-gray-400">(${total})</span></p>}
 
-                                {selected?.status === "pending" && <h2 className="card-title">{selected?.currentEndorsers} Endorsers</h2>}
-                                {selected?.status === "pending" && <progress className={"progress progress-" + color} value={+selected?.currentEndorsers} max={+selected?.totalEndorsers}></progress>}
-                                {selected?.status === "pending" && <p className="text-xs text-gray-400 font-thin leading-relaxed">Of {selected?.totalEndorsers} Endorser Goal</p>}
+                                {selected && selected?.status === "pending" && <h2 className="card-title">{selected?.currentEndorsers} Endorsers</h2>}
+                                {selected && selected?.status === "pending" && <progress className={"progress progress-" + color} value={+selected?.currentEndorsers} max={+selected?.totalEndorsers}></progress>}
+                                {selected && selected?.status === "pending" && <p className="text-xs text-gray-400 font-thin leading-relaxed">Of {selected?.totalEndorsers} Endorser Goal</p>}
                             </div>
                             <div className="pt-4">
                                 {selected?.status !== "pending" && selected?.endorsed && (<p className="san-serif text-green-500">
@@ -152,14 +185,14 @@ export default function Home() {
                                 {selected?.status === "cancelled" && (<p className="san-serif text-red-500">
                                     x GAME CANCELLED
                                 </p>)}
-                                
+
                                 {!selected?.status === "active" && <p className="font-thin text-xs italic">Game must be endorsed before starting</p>}
 
                             </div>
                         </div>
                     </div>
                     <div className="flex flex-col">
-                        <GameButton game={selected} externalClickHandler={handleClick} />
+                        <GameButton game={selected} entered={entered} externalClickHandler={handleClick} />
                     </div>
                     <OrgDetails charity={charity} />
                 </div>

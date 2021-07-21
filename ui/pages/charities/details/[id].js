@@ -50,9 +50,9 @@ export default function Home(props) {
             <div className="flex">
                 <div className="flex-grow">
                     <div className="w-full carousel rounded-box">
-                        {charity?.heroImages?.map(e => {
+                        {charity?.heroImages?.map((e, i) => {
                             return (
-                                <div className="w-full carousel-item">
+                                <div key={i} className="w-full carousel-item">
                                     <img src={e} className="rounded-xl shadow-xl w-full" />
                                 </div>
                             );
@@ -67,7 +67,7 @@ export default function Home(props) {
                             </div>
                             <div className={"" + (tab === 0 ? "" : "hidden")}>
                                 {charity?.story?.split("\n").map((e, i) => {
-                                    return i === 0 ? <p className="font-thin pb-4">{e}</p> : <p className="font-thin">{e}</p>
+                                    return i === 0 ? <p key={i} className="font-thin pb-4">{e}</p> : <p key={i} className="font-thin">{e}</p>
                                 })}
 
                             </div>
@@ -76,7 +76,7 @@ export default function Home(props) {
                                     {
                                         games?.map(game => {
                                             return (
-                                                <GameDetails key={game} game={game}/>
+                                                <GameDetails key={game.id} game={game}/>
                                             );
                                         })
                                     }

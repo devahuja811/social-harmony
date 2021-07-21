@@ -385,13 +385,15 @@ contract SocialGame is Ownable, IERC721Receiver {
 
     /**
      * @dev helper function to determine if the msg.sender won
+     *
+     * @param addr to check whether user won
      * @return won whether the msg.sender is part of the winning address set
      */
-    function didIWin() external view virtual returns (bool won) {
+    function didIWin(address addr) external view virtual returns (bool won) {
         won =
-            winner1st == msg.sender ||
-            winner2nd == msg.sender ||
-            winner3rd == msg.sender;
+            winner1st == addr ||
+            winner2nd == addr ||
+            winner3rd == addr;
     }
 
     /**
@@ -477,16 +479,17 @@ contract SocialGame is Ownable, IERC721Receiver {
     /**
      * @dev get dao and winners escrow values for caller of this function
      *
+     * @param addr address to check
      * @return daoEscrow total value in dao escrow
      * @return winnersEscrow total value in winners' escrow
      */
-    function getDeposits()
+    function getDeposits(address addr)
         public
         view
         returns (uint256 daoEscrow, uint256 winnersEscrow)
     {
-        daoEscrow = _daoEscrow.depositsOf(msg.sender);
-        winnersEscrow = _winnersEscrow.depositsOf(msg.sender);
+        daoEscrow = _daoEscrow.depositsOf(addr);
+        winnersEscrow = _winnersEscrow.depositsOf(addr);
     }
 
     // function for receiving tokens

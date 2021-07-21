@@ -1,5 +1,7 @@
 import { useRouter } from 'next/router'
+import { useEffect } from 'react';
 import useStickyState from '../../lib/useStickyState';
+import { getReporting } from '../../lib/web3/token';
 
 function Hero() {
     const router = useRouter();
@@ -10,6 +12,10 @@ function Hero() {
       moneyRaised: 0,
       ticketsPurchased: 0
     }, "overallReport");
+
+    useEffect(async e=>{
+      setReporting(await getReporting());
+    }, []);
 
     return (<div className="flex w-screen bg-cover card h-screen bg-neutral" style={{ "backgroundImage": "url('" + `unsplash-charity-${Math.floor(Math.random() * 5) + 1}.jpeg` + "')" }}>
         <div className="hero min-h-screen bg-neutral bg-opacity-60">
