@@ -212,6 +212,29 @@ contract SocialGame is Ownable, IERC721Receiver {
     }
 
     /**
+     * Function returning the details of winners in one function call.
+     */
+    function getWinners()
+        public
+        view
+        returns (
+            address first,
+            address second,
+            address third,
+            bool firstClaimed,
+            bool secondClaimed,
+            bool thirdClaimed
+        )
+    {
+        first = winner1st;
+        second = winner2nd;
+        third = winner3rd;
+        firstClaimed = _1stPrizeClaimed;
+        secondClaimed = _2ndPrizeClaimed;
+        thirdClaimed = _3rdPrizeClaimed;
+    }
+
+    /**
      * @dev Participate in the Social Game by transferring appropriate amount.
      * Increases player count and records the address that transferred
      *
@@ -226,10 +249,7 @@ contract SocialGame is Ownable, IERC721Receiver {
         require(msg.value == pricePerRound, "ER_004");
         require(isGameCompleted == false, "ER_005");
         require(_daoEscrow.depositsOf(msg.sender) == 0, "ER_006");
-        require(
-            endorsements == requiredEndorsers,
-            "ER_007"
-        );
+        require(endorsements == requiredEndorsers, "ER_007");
 
         uint256 additional = 0;
         if (requiredEndorsers == 0) {
@@ -271,10 +291,7 @@ contract SocialGame is Ownable, IERC721Receiver {
      */
     function refund() external payable virtual {
         require(isGameCancelled(), "ER_008");
-        require(
-            _winnersEscrow.depositsOf(msg.sender) > 0,
-            "ER_009"
-        );
+        require(_winnersEscrow.depositsOf(msg.sender) > 0, "ER_009");
 
         _daoEscrow.withdraw(payable(msg.sender));
         _winnersEscrow.withdraw(payable(msg.sender));
@@ -288,14 +305,8 @@ contract SocialGame is Ownable, IERC721Receiver {
      * Emits {EndorserRefunded} event
      */
     function refundEndorsement() external virtual {
-        require(
-            isGameCancelled(),
-            "ER_010"
-        );
-        require(
-            _endorsers[msg.sender] > 0,
-            "ER_011"
-        );
+        require(isGameCancelled(), "ER_010");
+        require(_endorsers[msg.sender] > 0, "ER_011");
 
         uint256 token = _endorsers[msg.sender];
         _endorsers[msg.sender] = 0;
@@ -305,6 +316,7 @@ contract SocialGame is Ownable, IERC721Receiver {
 
         emit EndorsementRefunded(msg.sender, token);
     }
+
     /**
      * @dev enable winners of the game to withdraw, only if the game is complete
      * and msg sender matches winner
@@ -312,10 +324,7 @@ contract SocialGame is Ownable, IERC721Receiver {
      * Emits {PrizeClaimed} event
      */
     function claimPrize() external virtual {
-        require(
-            isGameComplete(),
-            "ER_012"
-        );
+        require(isGameComplete(), "ER_012");
         require(
             msg.sender == winner1st ||
                 msg.sender == winner2nd ||
@@ -358,18 +367,9 @@ contract SocialGame is Ownable, IERC721Receiver {
      * Emits {EndorsementFeeClaimed} event
      */
     function claimEndorsementFee() external virtual {
-        require(
-            isGameComplete(),
-            "ER_015"
-        );
-        require(
-            requiredEndorsers > 0,
-            "ER_016"
-        );
-        require(
-            _endorsers[msg.sender] > 0,
-            "ER_017"
-        );
+        require(isGameComplete(), "ER_015");
+        require(requiredEndorsers > 0, "ER_016");
+        require(_endorsers[msg.sender] > 0, "ER_017");
 
         _endorsers[msg.sender] = 0;
         address payable payoutAddress = payable(msg.sender);
@@ -390,10 +390,7 @@ contract SocialGame is Ownable, IERC721Receiver {
      * @return won whether the msg.sender is part of the winning address set
      */
     function didIWin(address addr) external view virtual returns (bool won) {
-        won =
-            winner1st == addr ||
-            winner2nd == addr ||
-            winner3rd == addr;
+        won = winner1st == addr || winner2nd == addr || winner3rd == addr;
     }
 
     /**
@@ -403,22 +400,10 @@ contract SocialGame is Ownable, IERC721Receiver {
      * Emits {BeneficiaryWithdrawn} event
      */
     function beneficiaryWithdraw() external virtual {
-        require(
-            isGameCancelled() == false,
-            "ER_018"
-        );
-        require(
-            msg.sender == _daoEscrow.beneficiary(),
-            "ER_019"
-        );
-        require(
-            isGameComplete(),
-            "ER_020"
-        );
-        require(
-            address(_daoEscrow).balance > 0,
-            "ER_021"
-        );
+        require(isGameCancelled() == false, "ER_018");
+        require(msg.sender == _daoEscrow.beneficiary(), "ER_019");
+        require(isGameComplete(), "ER_020");
+        require(address(_daoEscrow).balance > 0, "ER_021");
 
         _daoEscrow.beneficiaryWithdraw();
 
@@ -494,18 +479,12 @@ contract SocialGame is Ownable, IERC721Receiver {
 
     // function for receiving tokens
     receive() external payable {
-        require(
-            msg.sender == address(_winnersEscrow),
-            "ER_023"
-        );
+        require(msg.sender == address(_winnersEscrow), "ER_023");
     }
 
     // Fallback function is called when msg.data is not empty
     fallback() external payable {
-        require(
-            msg.sender == address(_winnersEscrow),
-            "ER_024"
-        );
+        require(msg.sender == address(_winnersEscrow), "ER_024");
     }
 
     /**
@@ -523,15 +502,9 @@ contract SocialGame is Ownable, IERC721Receiver {
         uint256 tokenId,
         bytes calldata data
     ) external override returns (bytes4) {
-        require(
-            msg.sender == address(_socialGameToken),
-            "ER_025"
-        );
+        require(msg.sender == address(_socialGameToken), "ER_025");
         require(_endorsers[from] == 0, "ER_026");
-        require(
-            endorsements < requiredEndorsers,
-            "ER_027"
-        );
+        require(endorsements < requiredEndorsers, "ER_027");
 
         _endorsers[from] = tokenId;
         endorsements = endorsements + 1;

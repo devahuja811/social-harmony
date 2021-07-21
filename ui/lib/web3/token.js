@@ -73,8 +73,6 @@ const getReporting = async () => {
     const orgs = await getOrganisations();
     const games = await getGames();
 
-    console.log(result);
-
     return {
         gamesPlayed: games.length,
         organisations: orgs.length,
@@ -88,6 +86,16 @@ const particpatingInGame = async (gameAddress) => {
     const result = await contractInstance.methods.getDeposits(fromBech32(UserContext.user.address)).call(); 
     
     return result;
+}
+
+const getWinners = async (gameAddress) => {
+    const contractInstance = getGameContract(gameAddress);
+    
+    const winnerDetails = await contractInstance.methods.getWinners().call();
+    winnerDetails.first = toBech32(winnerDetails.first);
+    winnerDetails.second = toBech32(winnerDetails.second);
+    winnerDetails.third = toBech32(winnerDetails.third);
+    return winnerDetails;
 }
 
 const playGame = async (gameAddress) => {
@@ -110,5 +118,6 @@ export {
     getOrganisations,
     getReporting,
     particpatingInGame,
-    playGame
+    playGame,
+    getWinners
 }
