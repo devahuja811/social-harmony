@@ -8,7 +8,7 @@ const { BN, fromBech32, toBech32 } = require('@harmony-js/crypto');
 import UserContext from "./userContext";
 
 const getOrganisations = async () => {
-    const contractInstance = getRegistryContract();
+    const contractInstance = await getRegistryContract();
     // console.log(contractInstance);
     const result = await contractInstance.methods.getOrgs().call();
 
@@ -53,7 +53,7 @@ const getGame = async (game) => {
 }
 
 const getGames = async () => {
-    const contractInstance = getTokenContract();
+    const contractInstance = await getTokenContract();
     const games = await Promise.all((await contractInstance.methods.getGameAddresses().call()).map(async game => {
         const json = getGame(game);
         return Promise.resolve(json);
@@ -82,14 +82,14 @@ const getReporting = async () => {
 }
 
 const particpatingInGame = async (gameAddress) => {
-    const contractInstance = getGameContract(gameAddress);
+    const contractInstance = await getGameContract(gameAddress);
     const result = await contractInstance.methods.getDeposits(fromBech32(UserContext.user.address)).call(); 
     
     return result;
 }
 
 const getWinners = async (gameAddress) => {
-    const contractInstance = getGameContract(gameAddress);
+    const contractInstance = await getGameContract(gameAddress);
     
     const winnerDetails = await contractInstance.methods.getWinners().call();
     winnerDetails.first = toBech32(winnerDetails.first);
@@ -99,7 +99,7 @@ const getWinners = async (gameAddress) => {
 }
 
 const playGame = async (gameAddress) => {
-    const contractInstance = UserContext.user.attachToContract(getGameContract(gameAddress));
+    const contractInstance = UserContext.user.attachToContract(await getGameContract(gameAddress));
     const value = await contractInstance.methods.pricePerRound().call();
     
     const options = {
@@ -113,7 +113,7 @@ const playGame = async (gameAddress) => {
 }
 
 const claimPrize = async (gameAddress) => {
-    const contractInstance = UserContext.user.attachToContract(getGameContract(gameAddress));
+    const contractInstance = UserContext.user.attachToContract(await getGameContract(gameAddress));
     const beforeClaim = await hmy.blockchain.getBalance({address: UserContext.user.address});
     const options = {
         gasPrice: 1000000000,

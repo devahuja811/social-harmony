@@ -9,6 +9,7 @@ class userStore {
     constructor() {
         this.isOneWallet = window?.onewallet && window.onewallet.isOneWallet;
         this.onewallet = window?.onewallet;
+        console.log(this.onewallet, window.onewallet);
     }
 
     async signout() {
@@ -22,6 +23,8 @@ class userStore {
     }
 
     async signin() {
+        console.log(this.onewallet);
+
         const getAccount = await this.onewallet.getAccount();
 
         this.address = getAccount.address;

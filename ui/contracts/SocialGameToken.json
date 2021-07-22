@@ -31888,12 +31888,12 @@
         }
       },
       "links": {},
-      "address": "0x86e8A695050C7301Db9Ca78575ea629D41fD37d6",
-      "transactionHash": "0x4b898e488f9ab5635044c4aedd290210ac54eadb4de07bf40d0c8d0a87d0d2b9"
+      "address": "0x6af40fE9D5E495C62cE1A2489A763B079b9d2eaA",
+      "transactionHash": "0x39fc8d4d6ce60c9917520cbaee5734c2a3529d780640e6e23900817ac1589c6f"
     }
   },
   "schemaVersion": "3.4.1",
-  "updatedAt": "2021-07-22T03:04:20.372Z",
+  "updatedAt": "2021-07-22T12:37:15.810Z",
   "networkType": "ethereum",
   "devdoc": {
     "author": "victaphu",

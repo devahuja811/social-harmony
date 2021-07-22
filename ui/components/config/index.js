@@ -12,4 +12,4 @@ const config = {
 
 console.log(env);
 
-export default config[env];
+export default config[env] || config["testnet"];
