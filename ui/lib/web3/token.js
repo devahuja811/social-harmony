@@ -112,6 +112,23 @@ const playGame = async (gameAddress) => {
     return result;
 }
 
+const claimPrize = async (gameAddress) => {
+    const contractInstance = UserContext.user.attachToContract(getGameContract(gameAddress));
+    const beforeClaim = await hmy.blockchain.getBalance({address: UserContext.user.address});
+    const options = {
+        gasPrice: 1000000000,
+        gasLimit: 1000000
+    };
+    const results = await contractInstance.methods.claimPrize().send(options);
+    const afterClaim = await hmy.blockchain.getBalance({address: UserContext.user.address});
+
+    return {
+        before: Math.round(100 * fromWei(hexToNumber(beforeClaim.result), Units.one)) / 100,
+        after: Math.round(100 * fromWei(hexToNumber(afterClaim.result), Units.one)) / 100,
+        results
+    };
+}
+
 export {
     getGame,
     getGames,
@@ -119,5 +136,6 @@ export {
     getReporting,
     particpatingInGame,
     playGame,
-    getWinners
+    getWinners,
+    claimPrize
 }

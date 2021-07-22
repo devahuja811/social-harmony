@@ -1,8 +1,8 @@
 const config = {
     network: 'testnet',
     addresses: {
-      "token": "0xb2174dBF0281477d7af4B4b5D2E5F0296BBDBc74",
-      "registry": "0xFA9771847D1181e8B2d4bd01a01CF826DCF31A5c"
+      "token": "0x86e8A695050C7301Db9Ca78575ea629D41fD37d6",
+      "registry": "0x1cB7A52311043Eaf299e5fAc8087B828f8D8E577"
     }
   };
   

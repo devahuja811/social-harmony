@@ -40,7 +40,7 @@ function ConnectWallet({ bal, addr }) {
             {address && <div className="text-xs font-thin">
                 <b>Wallet</b>: {address} <br />
                 <b>Balance</b>: {balance} <br/>
-                <button onClick={async e => clear()}>
+                <button className="btn btn-xs font-thin" onClick={async e => clear()}>
                     Logout
                 </button>
                 

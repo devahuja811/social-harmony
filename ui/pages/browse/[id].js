@@ -17,9 +17,10 @@ import useStickyState from "../../lib/useStickyState";
 import OrgDetails from "../../components/main/orgDetails";
 import GameButton from "../../components/main/gameButton";
 import UserContext from "../../lib/web3/userContext";
-import { getGame, getWinners, particpatingInGame, playGame } from "../../lib/web3/token";
+import { claimPrize, getGame, getWinners, particpatingInGame, playGame } from "../../lib/web3/token";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const MySwal = withReactContent(Swal)
 
@@ -94,14 +95,14 @@ export default function Home() {
         if (game.status !== "active") {
             return; // should change the button as well
         }
-
+        setUpdating(true);
+        
         if (!UserContext.user.isAuthorized) {
             await UserContext.user.signin();
             UserContext.setUser(UserContext.user);
         }
 
         const result = await playGame(game.id);
-        setUpdating(true);
         console.log(result);
         if (result.status === "rejected") {
             // tell user they already entered the game ...
@@ -126,6 +127,28 @@ export default function Home() {
         }
         setUpdating(false);
         setEntered(true);
+    }
+
+    const handleClaimed = async () => {
+        setUpdating(true);
+        const result = await claimPrize(selected.id);
+
+        if (result.results.status !== "called") {
+            Swal.fire(
+                'Error claiming prize',
+                "An error occurred while trying to claim the prize, please check your wallet address and try again",
+                "error"
+            );
+        } 
+        else {
+            Swal.fire(
+                'Succesfully claimed the prize',
+                `Before claiming the prize, you had ${result.before} ONE. After claiming the prize you now have ${result.after} ONE. Thanks for playing!`,
+                'success'
+            )
+        }
+
+        setUpdating(false);
     }
 
     const entries = (+(selected?.totalParticipants)) * (+(selected?.costPerEntry));
@@ -206,7 +229,7 @@ export default function Home() {
                                 <br />
                             </div>
                             {selected?.status === "completed" && <div className="pt-4">
-                                <p className="py-2">The Winners</p>
+                                <p className="py-2">The Winners {buttonUpdating && <FontAwesomeIcon icon="spinner" pulse />}</p>
                                 <table>
                                     <tbody>
                                         <tr>
@@ -216,8 +239,7 @@ export default function Home() {
                                             <td>
                                                 <div className="font-thin text-xs">
                                                 {winners?.first}<br/>
-                                                <p className="text-xs text-gray-400 font-thin leading-relaxed">Won 12.5 ONE</p> {!winners?.firstClaimed && winners?.first === UserContext.user.address && <button>Claim Your Prize!</button>}
-                                                    
+                                                <p className="text-xs text-gray-400 font-thin leading-relaxed">Won {entries * 0.2} ONE {winners?.firstClaimed && <span className="font-thin text-green-300">Claimed!</span>} {!winners?.firstClaimed && winners?.first === UserContext.user.address && <button onClick={handleClaimed} className="btn btn-primary btn-xs font-thin">Claim!</button>}</p>
                                                 </div>
                                             </td>
                                         </tr>
@@ -227,7 +249,7 @@ export default function Home() {
                                             <td>
                                                 <div className="font-thin text-xs">
                                                 {winners?.second}<br/>
-                                                <p className="text-xs text-gray-400 font-thin leading-relaxed">Won 12.5 ONE</p> {!winners?.secondClaimed && winners?.second === UserContext.user.address && <button>Claim Your Prize!</button>}      
+                                                <p className="text-xs text-gray-400 font-thin leading-relaxed">Won {entries * 0.1} ONE {winners?.secondClaimed && <span className="font-thin text-green-300">Claimed!</span>} {!winners?.secondClaimed && winners?.second === UserContext.user.address && <button onClick={handleClaimed} className="btn btn-primary btn-xs font-thin">Claim!</button>}      </p>
                                                 </div>
 
                                             </td>
@@ -240,7 +262,7 @@ export default function Home() {
                                             <td>
                                                 <div className="font-thin text-xs">
                                                     {winners?.third}<br/>
-                                                    <p className="text-xs text-gray-400 font-thin leading-relaxed">Won 12.5 ONE</p>  {!winners?.thirdClaimed && winners?.third === UserContext.user.address && <button>Claim Your Prize!</button>}
+                                                    <p className="text-xs text-gray-400 font-thin leading-relaxed">Won {entries * 0.05} ONE {winners?.thirdClaimed && <span className="font-thin text-green-300">Claimed!</span>} {!winners?.thirdClaimed && winners?.third === UserContext.user.address && <button onClick={handleClaimed} className="btn btn-primary btn-xs font-thin">Claim!</button>}</p>
                                                 </div>
 
                                             </td>

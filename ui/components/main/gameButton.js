@@ -16,7 +16,7 @@ function GameButton({ game, externalClickHandler, entered, updating }) {
             router.push("/browse/" + game?.id);
         }
     };
-    if (entered && (game?.status !== "completed" || game?.status !== "cancelled")) {
+    if (entered && (game?.status !== "completed" && game?.status !== "cancelled")) {
         return (
         <div>
             <button className="btn btn-info flex-1 mt-4">Already Joined</button>
