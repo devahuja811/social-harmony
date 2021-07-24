@@ -1,6 +1,5 @@
 const HDWalletProvider = require('@truffle/hdwallet-provider');
-const mnemonic = 'music blouse film lemon thumb position decorate grape funny sun kick van';
-const privateKeyTest = '02a226db5a4c527d5aceeb59b4d3c349d49ffa063796ce4ea6b785f46b6a66d1';
+const privateKeyTest = '<your private key>';
 
 module.exports = {
   plugins: ["truffle-contract-size"],
