@@ -18,10 +18,8 @@
     "truffle-contract-size": "^2.0.1",
     "tslib": "^2.3.0"
   },
-  "devDependencies": {
-    "@nomiclabs/hardhat-etherscan": "^2.1.6",
+  "devDependencies": {    
     "@openzeppelin/contracts": "^4.1.0",
-    "@truffle/hdwallet-provider": "^1.4.0",
-    "truffle-plugin-verify": "^0.5.15"
+    "@truffle/hdwallet-provider": "^1.4.0"   
   }
 }
