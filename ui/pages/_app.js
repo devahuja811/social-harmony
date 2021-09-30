@@ -35,7 +35,7 @@ function MyApp({ Component, pageProps }) {
 
   console.log("User details is", user);
 
-  return (<div>
+  return (<div className="text-white bg-gradient-to-r from-gray-600 to-gray-800">
     <Head>
         <title>Social Harmony - Donate for a Greater Good</title>
     </Head>

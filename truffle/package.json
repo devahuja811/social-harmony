@@ -19,7 +19,9 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
+    "@nomiclabs/hardhat-etherscan": "^2.1.6",
     "@openzeppelin/contracts": "^4.1.0",
-    "@truffle/hdwallet-provider": "^1.4.0"
+    "@truffle/hdwallet-provider": "^1.4.0",
+    "truffle-plugin-verify": "^0.5.15"
   }
 }

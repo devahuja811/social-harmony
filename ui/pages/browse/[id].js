@@ -155,7 +155,7 @@ export default function Home() {
     const total = entries * 6.40; // note - use price from exchange, currently hardcoded
 
     return (
-        <div className="container md mx-auto overflow-visible py-20 px-40 w-screen">
+        <div className="container md mx-auto overflow-visible md:py-20 md:px-40 px-12 py-12 w-screen h-full">
             <div className="flex">
                 <div className="h-16 flex-grow">
                     <p className="text-sm font-thin">
@@ -167,7 +167,7 @@ export default function Home() {
                     </p>
                 </div>
             </div>
-            <div className="flex">
+            <div className="flex md:flex-row flex-col md:gap-0 gap-4">
                 <div className="flex-grow">
                     <div className="w-full carousel rounded-box">
                         {
@@ -197,7 +197,7 @@ export default function Home() {
                         </div>
                     </div>
                 </div>
-                <div className="flex-none w-1/4 ml-4">
+                <div className="flex-none md:w-1/4 md:ml-4">
                     <div className="card bordered bg-gray-800 compact">
                         <div className="card-body divide-y">
                             <div className="pb-4">

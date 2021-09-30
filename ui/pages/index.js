@@ -23,7 +23,7 @@ export default function Home() {
   // }, []);
 
   return (
-    <div className="container w-screen overflow-visible">
+    <div className="container w-screen md:overflow-visible text-white">
       <Hero />
     </div>
   )

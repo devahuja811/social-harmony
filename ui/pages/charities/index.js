@@ -182,8 +182,8 @@ export default function Home() {
     }, [latest, charitiesObj]);
 
     return (
-        <div className="container md mx-auto overflow-visible py-20 px-40 w-screen">
-            <div className="grid grid-flow-row grid-cols-3 grid-rows-2 gap-8">
+        <div className="container md mx-auto overflow-visible h-screen md:py-20 py-12 md:px-40 px-8 w-screen">
+            <div className="grid grid-flow-row md:grid-cols-3 md:grid-rows-2 md:gap-8">
                 {cards}
             </div>
         </div>

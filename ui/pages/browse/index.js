@@ -29,7 +29,7 @@ export default function Home() {
     }, []);
 
     return (
-        <div className="container md mx-auto overflow-visible py-20 px-40 w-screen">
+        <div className="container md mx-auto overflow-visible md:py-20 md:px-40 py-12 px-12 w-screen md:h-screen h-full">
 
             <div className="form-control py-8">
                 <div className="relative">
@@ -39,7 +39,7 @@ export default function Home() {
                     </button>
                 </div>
             </div>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
                 {games?.map(game => {
                     return (<GameDetails key={game.id} game={game} />);
                 })}

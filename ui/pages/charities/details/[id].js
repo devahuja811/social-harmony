@@ -35,19 +35,19 @@ export default function Home(props) {
         }
         const c = charitiesObj.filter(e => e.id == id);
         setCharity(c[0]);
-        const g = gamesObj.filter(e=> e.organisation === id);
+        const g = gamesObj.filter(e => e.organisation === id);
         setGames(g);
-        
+
     }, [id, charitiesObj]);
 
     return (
-        <div className="container md mx-auto overflow-visible py-20 px-40 w-screen">
+        <div className="container md mx-auto overflow-visible md:py-20 md:px-40 px-8 py-12 w-screen">
             <div className="flex">
-                <p className="h-16 flex-grow text-3xl">
+                <p className="md:h-16 flex-grow md:text-3xl text-xl">
                     {charity?.organisation}
                 </p>
             </div>
-            <div className="flex">
+            <div className="flex md:flex-row flex-col md:gap-0 gap-4">
                 <div className="flex-grow">
                     <div className="w-full carousel rounded-box">
                         {charity?.heroImages?.map((e, i) => {
@@ -62,8 +62,8 @@ export default function Home(props) {
                     <div className="card compact lg:card-side bordered mt-4 bg-gray-800">
                         <div className="card-body">
                             <div className="tabs mb-4">
-                                <a className={"tab tab-bordered " + (tab === 0 ? "tab-active" : "")} onClick={e => setTab(0)}>Story</a>
-                                <a className={"tab tab-bordered " + (tab === 1 ? "tab-active" : "")} onClick={e => setTab(1)}>Social Campaigns</a>
+                                <a className={"tab tab-bordered text-white " + (tab === 0 ? "tab-active bg-white" : "")} onClick={e => setTab(0)}>Story</a>
+                                <a className={"tab tab-bordered text-white " + (tab === 1 ? "tab-active bg-white" : "")} onClick={e => setTab(1)}>Social Campaigns</a>
                             </div>
                             <div className={"" + (tab === 0 ? "" : "hidden")}>
                                 {charity?.story?.split("\n").map((e, i) => {
@@ -72,22 +72,22 @@ export default function Home(props) {
 
                             </div>
                             <div className={"" + (tab === 1 ? "" : "hidden")}>
-                                <div className="grid grid-cols-3 gap-4">
+                                <div className="grid md:grid-cols-3 gap-4 grid-cols-1">
                                     {
                                         games?.map(game => {
                                             return (
-                                                <GameDetails key={game.id} game={game}/>
+                                                <GameDetails key={game.id} game={game} />
                                             );
                                         })
                                     }
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
 
                 </div>
-                <div className="flex-none w-1/4 ml-4">
+                <div className="flex-none md:w-1/4 md:ml-4">
                     <div className="card bordered bg-gray-800 compact">
                         <div className="card-body divide-y">
                             <div className="pb-4">
@@ -96,9 +96,12 @@ export default function Home(props) {
                                 <p className="font-thin">from 250 games</p>
                             </div>
                             <div className="pt-4">
-                                <p className="san-serif text-green-500">
-                                    ✓ Verified
-                                </p>
+                                {charity.verified && (<p className="san-serif text-green-500">
+                                    ✓ VERIFIED
+                                </p>)}
+                                {!charity.verified && (<p className="san-serif text-blue-500">
+                                    ? UNVERIFIED
+                                </p>)}
                             </div>
                         </div>
                     </div>
@@ -106,7 +109,7 @@ export default function Home(props) {
                         <button className="btn btn-secondary flex-1 mt-4" onClick={() => router.push("/browse")}>Browse active Campaigns</button>
                     </div>
 
-                    {<OrgDetails charity={charity}/>}
+                    {<OrgDetails charity={charity} />}
 
                 </div>
             </div>
